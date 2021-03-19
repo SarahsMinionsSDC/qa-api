@@ -34,18 +34,45 @@ const helpers = {
     let query = Question.find( {product_id });
 
     query.limit(5) // for testing, not sure this should be page, count or page * count yet
+    // query.sort(should ignore things with reported: 1, or possibly put that logic inside the .find query)
     // query.sort({helpfulness: 1 or -1})
 
     query.exec((err, questions) => {
       callback(err, questions)
     })
-
   },
+  getAnswersByQuestionId: (req, callback) => {
+    // params product_id, page (default 1), count (default 5)
+    let q_id = req.params.question_id;
+    let page = req.params.page || 1;
+    let count = req.params.count || 5;
+    let query = Question.find( {q_id });
 
-  // getAnswersByQuestionId,
+    query.limit(5) // for testing, not sure this should be page, count or page * count yet
+    // query.sort(should ignore things with reported: 1, or possibly put that logic inside the .find query)
+    // query.sort({helpfulness: 1 or -1})
+
+    query.exec((err, answers) => {
+      callback(err, answers)
+    })
+  },
   // addAnswer,
-  // helpfulQuestion,
-  // reportQuestion,
+  helpfulQuestion: (req, callback) => {
+    let q_id = req.params.question_id;
+    let query = Question.find( {q_id });
+    query.updateOne({ $inc: {"helpful" : 1} })
+    query.exec((err, result) => {
+      callback(err, result)
+    })
+  },
+  reportQuestion: (req, callback) => {
+    let q_id = req.params.question_id;
+    let query = Question.find( {q_id });
+    query.updateOne({ reported : 1})
+    query.exec((err, result) => {
+      callback(err, result)
+    })
+  },
   // helpfulAnswer,
   // reportAnswer,
 }

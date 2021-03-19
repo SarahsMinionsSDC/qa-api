@@ -12,9 +12,9 @@ const controller = {
     })
   },
   getAnswersByQuestionId: (req, res) => {
-    // params product_id, page (default 1), count (default 5),
-    // status 200
-    res.send('answers by question id')
+    helpers.getAnswersByQuestionId(req, (err, result) => {
+      err ? console.error(err) : res.status(200).json(result)
+    })
   },
   addAnswer: (req, res) => {
     // params question_id
@@ -23,14 +23,14 @@ const controller = {
     res.send('add answer')
   },
   helpfulQuestion: (req, res) => {
-    // params question_id
-    // status 204
-    res.send('helpful question')
+    helpers.helpfulQuestion(req, (err) => {
+      err ? console.error(err) : res.status(204).send()
+    })
   },
   reportQuestion: (req, res) => {
-    // params question_id
-    // status 204
-    res.send('reported question')
+    helpers.reportQuestion(req, (err) => {
+      err ? console.error(err) : res.status(204).send()
+    })
   },
   helpfulAnswer: (req, res) => {
     // params question_id
