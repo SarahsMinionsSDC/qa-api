@@ -2,9 +2,6 @@ const {helpers} = require ('../db/helpers.js');
 
 const controller = {
   addQuestion: (req, res) => {
-    // req.body params: body, name, email, product_id
-    // status 201
-    // res.send('add question')
     helpers.addQuestion(req, (err) => {
       err ? console.error(err) : res.status(201).send();
     })
@@ -20,10 +17,9 @@ const controller = {
     })
   },
   addAnswer: (req, res) => {
-    // params question_id
-    // req.body params: body, name, email, photos
-    // status 201
-    res.send('add answer')
+    helpers.addAnswer(req, (err) => {
+      err ? console.error(err) : res.status(201).send();
+    })
   },
   helpfulQuestion: (req, res) => {
     helpers.helpfulQuestion(req, (err) => {

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const db = mongoose.connect(`mongodb://localhost/questions-answers`, { useNewUrlParser: true, useUnifiedTopology: true });
 const Question = require('./schemas/question.js');
+const Answer = require('./schemas/answer.js');
+const Photo = require('./schemas/photo.js');
+
+
 
 // endpoint localhost:27017/questions-answers
 
@@ -50,8 +54,32 @@ const helpers = {
     query.exec((err, answers) => {
       callback(err, answers)
     })
+
   },
-  // addAnswer,
+  addAnswer: (req, callback) => {
+    // req.params : question_id
+    let q_id = req.params.question_id;
+    // req.body params: body, name, email, photos
+
+    let answer = new Answer({
+      q_id,
+      body: req.body.body,
+      date_written: new Date(),
+      answerer_name: req.body.name,
+      answerer_email: req.body.email,
+      reported: 0,
+      helpful: 0,
+      photos: req.body.photos || []
+    })
+
+    // find by question_id and update into answers array
+    let query = Question.find({ q_id });
+    query.updateOne({ $push: { answers: answer } })
+    query.exec((err, result) => {
+      callback(err, result)
+    })
+
+  },
   helpfulQuestion: (req, callback) => {
     let q_id = req.params.question_id;
     let query = Question.find({ q_id });
