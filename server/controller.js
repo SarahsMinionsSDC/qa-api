@@ -37,9 +37,9 @@ const controller = {
     })
   },
   reportAnswer: (req, res) => {
-    // params question_id
-    // status 204
-    res.send('reported answer')
+    helpers.reportAnswer(req, (err) => {
+      err ? console.error(err) : res.status(204).send()
+    })
   }
 }
 

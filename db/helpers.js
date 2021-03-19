@@ -69,21 +69,34 @@ const helpers = {
       answerer_email: req.body.email,
       reported: 0,
       helpful: 0,
-      photos: req.body.photos || []
+      photos: []
     })
 
     // find by question_id and update into answers array
     let query = Question.find({ q_id });
     query.updateOne({ $push: { answers: answer } })
     query.exec((err, result) => {
-      callback(err, result)
+      if (req.body.photos.length) {
+        addPhotosToAnswer(req.body.photos, answer, callback)
+      } else { callback(err, result) }
     })
+  },
+  addPhotosToAnswer: (photoUrls, targetAnswer, callback) => {
+    let photos = [];
+    // look up target answer, get its id
+    // let answer_id = ???;
 
+    // make an array of new Photo objects, with answer_id and each url
+    for (let url of photoUrls) {
+      photos.push(new Photo({ answer_id, url }))
+    }
+    // then loop through array of photo objects and addToSet into target 'answers.$.photos'
+    // query.exec callback
   },
   helpfulQuestion: (req, callback) => {
     let q_id = req.params.question_id;
     let query = Question.find({ q_id });
-    query.updateOne({ $inc: { "helpful": 1 } })
+    query.updateOne({ $inc: { "helpful" : 1 } })
     query.exec((err, result) => {
       callback(err, result)
     })
@@ -97,26 +110,19 @@ const helpers = {
     })
   },
   helpfulAnswer: (req, callback) => {
-    let a_id = req.params.answer_id;
-    let query = Question.find({ answers: { $elemMatch: { a_id } } });
-
-    // not working
-    query.updateOne({ $inc: { "answers.$.helpful": 1 } });
-
-    query.exec((err, result) => {
-      callback(err, result)
-    })
+    let a_id = Number(req.params.answer_id);
+    Question.findOneAndUpdate(
+      { answers: { $elemMatch: { a_id } } },
+      { $inc: { "answers.$.helpful" : 1 } }
+    ).exec(callback)
   },
   reportAnswer: (req, callback) => {
-    let a_id = req.params.answer_id;
-    let query = Question.find({ answers: { $elemMatch: { a_id } } });
-
-    // not working
-    query.updateOne({ "answers.$.reported": 1 })
-    query.exec((err, result) => {
-      callback(err, result)
-    })
+    let a_id = Number(req.params.answer_id);
+    Question.findOneAndUpdate(
+      { answers: { $elemMatch: { a_id } } },
+      { $set: { "answers.$.reported": 1 } }
+    ).exec(callback)
   },
 }
 
-module.exports = {db, helpers};
+module.exports = { db, helpers };
