@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
 
 const answerSchema = mongoose.Schema({
-  a_id: {type: Number, index: true},
+  a_id: {type: Number, index: true, unique: true},
   question_id: {type: Number, index: true},
   body: String,
   date_written: Date,
@@ -11,6 +13,8 @@ const answerSchema = mongoose.Schema({
   helpful: Number,
   photos: Array
 });
+
+answerSchema.plugin(AutoIncrement, {inc_field: 'a_id'});
 
 answerSchema.index({a_id: 1})
 answerSchema.index({question_id: 1})
