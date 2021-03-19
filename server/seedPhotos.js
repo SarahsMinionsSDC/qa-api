@@ -26,6 +26,8 @@ db.on("open", function (err, conn) {
 
   stream.on("line", function (line) {
     var row = line.split(",");     // split the lines on delimiter
+
+    // todo: clean data
     var photoObj = new Photo({
       p_id: Number(row[0]),
       answer_id: Number(row[1]),
@@ -34,6 +36,7 @@ db.on("open", function (err, conn) {
 
     // https://docs.mongodb.com/manual/reference/operator/update/addToSet/
     bulk.find({ answers: { $elemMatch: { a_id: Number(row[1]) } } }).updateOne({ $addToSet: { "answers.$.photos": photoObj } })
+
 
     counter++;
     if (counter % 100000 === 0) {

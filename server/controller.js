@@ -1,4 +1,4 @@
-// require db helpers
+const helpers = require ('../db/helpers.js');
 
 const controller = {
   addQuestion: (req, res) => {
@@ -7,9 +7,9 @@ const controller = {
     res.send('add question')
   },
   getQuestionsByProductId: (req, res) => {
-    // params product_id, page (default 1), count (default 5),
-    // status 200
-    res.send('questions by product id')
+    helpers.getQuestionsByProductId(req, (err, result) => {
+      err ? console.error(err) : res.status(200).json(result)
+    })
   },
   getAnswersByQuestionId: (req, res) => {
     // params product_id, page (default 1), count (default 5),

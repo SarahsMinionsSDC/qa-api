@@ -27,6 +27,7 @@ db.on("open",function(err,conn) {
   stream.on("line",function(line) {
       var row = line.split(",");     // split the lines on delimiter
 
+      // todo: clean data
       var answerObj = new Answer({
         a_id: Number(row[0]),
         question_id: Number(row[1]),
@@ -39,6 +40,7 @@ db.on("open",function(err,conn) {
         photos: []
       });
 
+      // change to updateOne and $addToSet when seeding again
       bulk.find( { q_id: Number(row[1]) } ).upsert().update( { $push: { answers: answerObj } })
 
       counter++;

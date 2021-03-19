@@ -2,9 +2,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const Question = require ('../db/schemas/question.js')
-const Answer = require ('../db/schemas/answer.js')
-const Photo = require ('../db/schemas/photo.js')
 const router = require ('./routes.js');
 
 const app = express();
@@ -22,8 +19,6 @@ db.once('open', () => {
 app.use(morgan('dev'));
 app.use(express.json());
 app.use('/qa', router)
-
-
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)

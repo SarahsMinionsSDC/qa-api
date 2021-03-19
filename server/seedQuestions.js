@@ -6,8 +6,6 @@ const Question = require('../db/schemas/question.js');
 const questions_csv = path.join(__dirname, '../db/data/questions.csv')
 // look into byline package instead of line-by-line if i have to do this again, apparently much faster
 
-
-
 // localhost connection
 mongoose.connect(`mongodb://localhost/questions-answers`, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
@@ -19,7 +17,6 @@ db.once('open', () => {
 const stream = new LineByLineReader(questions_csv);
 
 db.on("open",function(err,conn) {
-  console.time('start')
 
     var bulk = Question.collection.initializeOrderedBulkOp();
     var counter = 0;
@@ -30,6 +27,7 @@ db.on("open",function(err,conn) {
     stream.on("line",function(line) {
         var row = line.split(","); // split the lines on delimiter
 
+        // todo: clean data
         var obj = new Question({
           q_id: Number(row[0]),
           product_id: Number(row[1]),
