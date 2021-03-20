@@ -1,4 +1,4 @@
-const {helpers} = require ('../db/helpers.js');
+const {helpers} = require ('../db/index.js');
 
 const controller = {
   addQuestion: (req, res) => {
@@ -7,13 +7,27 @@ const controller = {
     })
   },
   getQuestionsByProductId: (req, res) => {
-    helpers.getQuestionsByProductId(req, (err, result) => {
-      err ? console.error(err) : res.status(200).json(result)
+    helpers.getQuestionsByProductId(req, (err, results) => {
+      if(err) console.error(err);
+      let formatted = {
+        product_id: req.params.product_id,
+        page: req.params.page || 1,
+        count: req.params.count || 5,
+        results: results[0].answers
+      }
+      res.status(200).json(formatted)
     })
   },
   getAnswersByQuestionId: (req, res) => {
-    helpers.getAnswersByQuestionId(req, (err, result) => {
-      err ? console.error(err) : res.status(200).json(result)
+    helpers.getAnswersByQuestionId(req, (err, results) => {
+      if(err) console.error(err);
+      let formatted = {
+        question: req.params.question_id,
+        page: req.params.page || 1,
+        count: req.params.count || 5,
+        results: results[0].answers
+      }
+      res.status(200).json(formatted)
     })
   },
   addAnswer: (req, res) => {

@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
-const db = mongoose.connect(`mongodb://localhost/questions-answers`, { useNewUrlParser: true, useUnifiedTopology: true });
 const Question = require('./schemas/question.js');
 const Answer = require('./schemas/answer.js');
 const Photo = require('./schemas/photo.js');
 
-
-
-// endpoint localhost:27017/questions-answers
+mongoose.connect(`mongodb://localhost/questions-answers`, { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+  console.log('mongoose connected');
+})
 
 const helpers = {
   addQuestion: (req, callback) => {
@@ -22,8 +24,8 @@ const helpers = {
       answers: []
     })
 
-    question.save((err, success) => {
-      callback(err, question)
+    question.save((err, ques) => {
+      callback(err, ques)
     })
 
   },
@@ -46,7 +48,7 @@ const helpers = {
     let q_id = req.params.question_id;
     let page = req.params.page || 1;
     let count = req.params.count || 5;
-    let query = Question.find({ q_id, reported: 0 }); // only get non-reported questions
+    let query = Question.find({ q_id, reported: 0 }); // only get non-reported answers
 
     query.limit(count)
     query.sort({ helpful: -1 }) // sort by most helpful
