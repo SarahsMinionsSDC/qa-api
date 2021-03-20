@@ -7,3 +7,7 @@ db/data/answers_photos.csv
 db/data/answers.csv
 
 db/data/questions.csv
+
+newrelic.js
+
+newrelic_agent.log
