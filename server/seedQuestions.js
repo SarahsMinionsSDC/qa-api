@@ -16,76 +16,76 @@ db.once('open', () => {
 
 const stream = new LineByLineReader(questions_csv);
 
-db.on("open",function(err,conn) {
+db.on("open", function (err, conn) {
 
-    var bulk = Question.collection.initializeOrderedBulkOp();
-    var counter = 0;
-    stream.on("error",function(err) {
-      console.log(err);
-    });
+  var bulk = Question.collection.initializeOrderedBulkOp();
+  var counter = 0;
+  stream.on("error", function (err) {
+    console.log(err);
+  });
 
-    stream.on("line",function(line) {
-        var row = line.split(","); // split the lines on delimiter
+  stream.on("line", function (line) {
+    var row = line.split(","); // split the lines on delimiter
 
-        // helpers to clean data
-        var cleanString = (str) => {
-          let result = ''
-          for (let i = 0; i < str.length; i++) {
-            // only add first and last char if it's an alphabet character
-            if (i === 0 || i === str.length - 1) {
-              // https://coderrocketfuel.com/article/how-to-check-if-a-character-is-a-letter-using-javascript
-              if ((/[a-zA-Z]/).test(str[i])) {
-                result += str[i]
-              }
-            } else {
-              // other than that use the whole string
-              result += str[i]
-            }
+    // helpers to clean data
+    var cleanString = (str) => {
+      let result = ''
+      for (let i = 0; i < str.length; i++) {
+        // only add first and last char if it's an alphabet character
+        if (i === 0 || i === str.length - 1) {
+          // https://coderrocketfuel.com/article/how-to-check-if-a-character-is-a-letter-using-javascript
+          if ((/[a-zA-Z]/).test(str[i])) {
+            result += str[i]
           }
-          return result
-         }
-
-        var numToBool = (n) => {
-          return n === 1 ? true : false
+        } else {
+          // other than that use the whole string
+          result += str[i]
         }
+      }
+      return result
+    }
 
-        var questionObj = new Question({
-          q_id: Number(row[0]),
-          product_id: Number(row[1]),
-          body: row[2],
-          date_written: row[3],
-          asker_name: row[4],
-          asker_email: row[5],
-          reported: Number(row[6]),
-          helpful: Number(row[7]),
-          answers: []
-        })
+    var numToBool = (n) => {
+      return n === 1 ? true : false
+    }
 
-        bulk.insert(questionObj);
+    var questionObj = new Question({
+      question_id: Number(row[0]),
+      product_id: Number(row[1]),
+      question_body: cleanString(row[2]),
+      question_date: row[3],
+      asker_name: cleanString(row[4]),
+      asker_email: cleanString(row[5]),
+      reported: numToBool(Number(row[6])),
+      helpfulness: Number(row[7]),
+      answers: []
+    })
 
-        counter++;
+    bulk.insert(questionObj);
 
-        if ( counter % 1000 === 0 ) {
-            stream.pause(); //lets stop reading from file until we finish writing this batch to db
+    counter++;
 
-            bulk.execute(function(err,result) {
-                if (err) throw err;
+    if (counter % 1000 === 0) {
+      stream.pause(); //lets stop reading from file until we finish writing this batch to db
 
-                bulk = Question.collection.initializeOrderedBulkOp();
+      bulk.execute(function (err, result) {
+        if (err) throw err;
 
-                stream.resume(); //continue to read from file
-            });
-        }
-    });
+        bulk = Question.collection.initializeOrderedBulkOp();
 
-    stream.on("end",function() {
-      console.log("done seeding questions")
-        if ( counter % 1000 != 0 ) {
-            bulk.execute(function(err,result) {
-                if (err) throw err;
-            });
-        }
-    });
+        stream.resume(); //continue to read from file
+      });
+    }
+  });
+
+  stream.on("end", function () {
+    console.log("done seeding questions")
+    if (counter % 1000 != 0) {
+      bulk.execute(function (err, result) {
+        if (err) throw err;
+      });
+    }
+  });
 
 })
 

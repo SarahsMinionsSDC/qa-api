@@ -27,15 +27,28 @@ db.on("open", function (err, conn) {
   stream.on("line", function (line) {
     var row = line.split(",");     // split the lines on delimiter
 
-    // todo: clean data
+    var cleanString = (str) => {
+      let result = ''
+      for (let i = 0; i < str.length; i++) {
+        if (i === 0 || i === str.length - 1) {
+          if ((/[a-zA-Z]/).test(str[i])) {
+            result += str[i]
+          }
+        } else {
+          result += str[i]
+        }
+      }
+      return result
+    }
+
     var photoObj = new Photo({
-      p_id: Number(row[0]),
+      id: Number(row[0]),
       answer_id: Number(row[1]),
-      url: row[2]
+      url: cleanString(row[2])
     });
 
     // https://docs.mongodb.com/manual/reference/operator/update/addToSet/
-    bulk.find({ answers: { $elemMatch: { a_id: Number(row[1]) } } }).updateOne({ $addToSet: { "answers.$.photos": photoObj } })
+    bulk.find({ answers: { $elemMatch: { answer_id: Number(row[1]) } } }).updateOne({ $addToSet: { "answers.$.photos": photoObj } })
 
 
     counter++;
