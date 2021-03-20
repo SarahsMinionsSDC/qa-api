@@ -52,9 +52,7 @@ db.on("open", function (err, conn) {
 
 
     counter++;
-    if (counter % 100000 === 0) {
-      console.log(counter)
-    }
+
     if (counter % 1000 === 0) {
       stream.pause();
       bulk.execute(function (err, result) {

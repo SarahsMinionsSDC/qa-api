@@ -17,7 +17,7 @@ db.once('open', () => {
 const stream = new LineByLineReader(questions_csv);
 
 db.on("open", function (err, conn) {
-
+  console.log("starting seed questions")
   var bulk = Question.collection.initializeOrderedBulkOp();
   var counter = 0;
   stream.on("error", function (err) {
