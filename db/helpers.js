@@ -58,13 +58,16 @@ const helpers = {
   },
   addAnswer: (req, callback) => {
     // req.params : question_id
-    let q_id = req.params.question_id;
-    // req.body params: body, name, email, photos
+    let q_id = Number(req.params.question_id);
+    let a_id = Math.floor(Math.random() * Math.floor(999999999999)) // random number between 0 and 1 trillion - good enough for now but should change this in the future
 
+    // req.body params: body, name, email, photos
+    let date = new Date();
     let answer = new Answer({
+      a_id,
       q_id,
       body: req.body.body,
-      date_written: new Date(),
+      date_written: date,
       answerer_name: req.body.name,
       answerer_email: req.body.email,
       reported: 0,
@@ -76,22 +79,25 @@ const helpers = {
     let query = Question.find({ q_id });
     query.updateOne({ $push: { answers: answer } })
     query.exec((err, result) => {
-      if (req.body.photos.length) {
-        addPhotosToAnswer(req.body.photos, answer, callback)
+      if (req.body.photos && req.body.photos.length) {
+        helpers.addPhotosToAnswer(req.body.photos, a_id, callback)
       } else { callback(err, result) }
     })
   },
-  addPhotosToAnswer: (photoUrls, targetAnswer, callback) => {
+  addPhotosToAnswer: (photoUrls, targetAnswerId, callback) => {
+    // look up target answer (matching by id just created)
+    let query = Question.find({answers: { $elemMatch: { a_id: targetAnswerId } } });
     let photos = [];
-    // look up target answer, get its id
-    // let answer_id = ???;
-
-    // make an array of new Photo objects, with answer_id and each url
+    // make an array of new Photo objects, with a random photo id, the target answer_id, and each url from req.body.photos array
     for (let url of photoUrls) {
-      photos.push(new Photo({ answer_id, url }))
+      let p_id = Math.floor(Math.random() * Math.floor(999999999999));
+      photos.push(new Photo({ p_id, answer_id: targetAnswerId, url }))
     }
-    // then loop through array of photo objects and addToSet into target 'answers.$.photos'
-    // query.exec callback
+    // then set targets' array of photo objects to the one just created
+    query.updateOne({ $set: { "answers.$.photos" : photos } })
+    query.exec((err, result) => {
+      callback(err, result)
+    })
   },
   helpfulQuestion: (req, callback) => {
     let q_id = req.params.question_id;
