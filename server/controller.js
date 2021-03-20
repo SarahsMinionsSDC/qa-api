@@ -13,7 +13,7 @@ const controller = {
         product_id: req.params.product_id,
         page: req.params.page || 1,
         count: req.params.count || 5,
-        results: results[0].answers
+        results: results[0].answers || []
       }
       res.status(200).json(formatted)
     })
@@ -25,7 +25,7 @@ const controller = {
         question: req.params.question_id,
         page: req.params.page || 1,
         count: req.params.count || 5,
-        results: results[0].answers
+        results: results[0].answers || []
       }
       res.status(200).json(formatted)
     })

@@ -2,6 +2,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const router = require ('./routes.js');
+const newrelic = require('newrelic');
 
 const app = express();
 const port = 3000;
