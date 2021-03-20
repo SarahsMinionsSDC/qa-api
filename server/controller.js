@@ -3,7 +3,7 @@ const {helpers} = require ('../db/index.js');
 const controller = {
   addQuestion: (req, res) => {
     helpers.addQuestion(req, (err) => {
-      err ? console.error(err) : res.status(201).send();
+      err ? console.error(err) : res.status(201).send('CREATED');
     })
   },
   getQuestionsByProductId: (req, res) => {
@@ -32,27 +32,27 @@ const controller = {
   },
   addAnswer: (req, res) => {
     helpers.addAnswer(req, (err) => {
-      err ? console.error(err) : res.status(201).send();
+      err ? console.error(err) : res.status(201).send('CREATED');
     })
   },
   helpfulQuestion: (req, res) => {
     helpers.helpfulQuestion(req, (err) => {
-      err ? console.error(err) : res.status(204).send()
+      err ? console.error(err) : res.status(204).send('NO CONTENT')
     })
   },
   reportQuestion: (req, res) => {
     helpers.reportQuestion(req, (err) => {
-      err ? console.error(err) : res.status(204).send()
+      err ? console.error(err) : res.status(204).send('NO CONTENT')
     })
   },
   helpfulAnswer: (req, res) => {
     helpers.helpfulAnswer(req, (err) => {
-      err ? console.error(err) : res.status(204).send()
+      err ? console.error(err) : res.status(204).send('NO CONTENT')
     })
   },
   reportAnswer: (req, res) => {
     helpers.reportAnswer(req, (err) => {
-      err ? console.error(err) : res.status(204).send()
+      err ? console.error(err) : res.status(204).send('NO CONTENT')
     })
   }
 }

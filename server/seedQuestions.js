@@ -27,8 +27,29 @@ db.on("open",function(err,conn) {
     stream.on("line",function(line) {
         var row = line.split(","); // split the lines on delimiter
 
-        // todo: clean data
-        var obj = new Question({
+        // helpers to clean data
+        var cleanString = (str) => {
+          let result = ''
+          for (let i = 0; i < str.length; i++) {
+            // only add first and last char if it's an alphabet character
+            if (i === 0 || i === str.length - 1) {
+              // https://coderrocketfuel.com/article/how-to-check-if-a-character-is-a-letter-using-javascript
+              if ((/[a-zA-Z]/).test(str[i])) {
+                result += str[i]
+              }
+            } else {
+              // other than that use the whole string
+              result += str[i]
+            }
+          }
+          return result
+         }
+
+        var numToBool = (n) => {
+          return n === 1 ? true : false
+        }
+
+        var questionObj = new Question({
           q_id: Number(row[0]),
           product_id: Number(row[1]),
           body: row[2],
@@ -40,7 +61,7 @@ db.on("open",function(err,conn) {
           answers: []
         })
 
-        bulk.insert(obj);
+        bulk.insert(questionObj);
 
         counter++;
 
