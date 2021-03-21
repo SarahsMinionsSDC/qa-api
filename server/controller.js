@@ -21,11 +21,12 @@ const controller = {
   getAnswersByQuestionId: (req, res) => {
     helpers.getAnswersByQuestionId(req, (err, results) => {
       if(err) console.error(err);
+      let formattedResults = results.length ? results[0].answers : [];
       let formatted = {
         question: req.params.question_id,
         page: req.params.page || 1,
         count: req.params.count || 5,
-        results: results[0].answers || []
+        results: formattedResults
       }
       res.status(200).json(formatted)
     })
