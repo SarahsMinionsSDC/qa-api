@@ -15,3 +15,7 @@ newrelic.js
 newrelic_agent.log
 
 mongodb.pem
+
+nginx_login.sh
+
+qa-api-server.pem
