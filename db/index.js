@@ -3,8 +3,11 @@ const Question = require('./schemas/question.js');
 const Answer = require('./schemas/answer.js');
 const Photo = require('./schemas/photo.js');
 
-// mongoose.connect('mongodb://jake:sdcpassword@54.219.31.59:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect('mongodb://localhost:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongodb ec2 instance
+mongoose.connect('mongodb://jake:sdcpassword@54.219.31.59:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// local host testing
+// mongoose.connect('mongodb://localhost:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
