@@ -4,7 +4,7 @@ const answerSchema = mongoose.Schema({
   answer_id: {type: Number, index: true, unique: true},
   question_id: {type: Number, index: true},
   body: String,
-  date: Date,
+  date: String,
   answerer_name: String,
   answerer_email: String,
   reported: Boolean,

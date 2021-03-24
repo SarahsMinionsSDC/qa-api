@@ -1,20 +1,21 @@
-const LineByLineReader = require('line-by-line');
+// const LineByLineReader = require('line-by-line');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const Question = require('../db/schemas/question.js');
 const questions_csv = path.join(__dirname, '../db/data/questions.csv')
-// look into byline package instead of line-by-line if i have to do this again, apparently much faster
+const byline = require('byline');
 
-// localhost connection
-mongoose.connect(`mongodb://localhost/questions-answers`, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://jake:sdcpassword@54.219.31.59:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   console.log('mongoose on');
 });
 
-const stream = new LineByLineReader(questions_csv);
+// const stream = new LineByLineReader(questions_csv);
+const fsStream = fs.createReadStream(questions_csv);
+const stream = byline.createStream(fsStream);
 
 db.on("open", function (err, conn) {
   console.log("starting seed questions")
@@ -24,8 +25,8 @@ db.on("open", function (err, conn) {
     console.log(err);
   });
 
-  stream.on("line", function (line) {
-    var row = line.split(","); // split the lines on delimiter
+  stream.on("data", function (line) {
+    var row = line.toString('utf-8').split(","); // split the lines on delimiter
 
     // helpers to clean data
     var cleanString = (str) => {
@@ -53,7 +54,7 @@ db.on("open", function (err, conn) {
       question_id: Number(row[0]),
       product_id: Number(row[1]),
       question_body: cleanString(row[2]),
-      question_date: row[3],
+      question_date: cleanString(row[3]),
       asker_name: cleanString(row[4]),
       asker_email: cleanString(row[5]),
       reported: numToBool(Number(row[6])),
@@ -64,6 +65,9 @@ db.on("open", function (err, conn) {
     bulk.insert(questionObj);
 
     counter++;
+    if (counter % 100000 === 0) {
+      console.log(counter)
+    }
 
     if (counter % 1000 === 0) {
       stream.pause(); //lets stop reading from file until we finish writing this batch to db

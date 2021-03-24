@@ -4,7 +4,7 @@ const questionSchema = mongoose.Schema({
   question_id: {type: Number, index: true, unique: true},
   product_id: {type: Number, index: true},
   question_body: String,
-  question_date: Date,
+  question_date: String,
   asker_name: String,
   asker_email: String,
   reported: Boolean,
