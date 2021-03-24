@@ -9,11 +9,12 @@ const controller = {
   getQuestionsByProductId: (req, res) => {
     helpers.getQuestionsByProductId(req, (err, results) => {
       if(err) console.error(err);
+      console.log(results);
       let formatted = {
         product_id: req.params.product_id,
         page: req.params.page || 1,
         count: req.params.count || 5,
-        results: results[0].answers || []
+        results: results || []
       }
       res.status(200).json(formatted)
     })

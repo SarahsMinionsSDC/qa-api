@@ -3,8 +3,8 @@ const Question = require('./schemas/question.js');
 const Answer = require('./schemas/answer.js');
 const Photo = require('./schemas/photo.js');
 
-mongoose.connect('mongodb://jake:sdcpassword@54.219.31.59:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
-// mongoose.connect('mongodb://localhost:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://jake:sdcpassword@54.219.31.59:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/questions-answers', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
@@ -24,12 +24,17 @@ function formatDate(date) {
 }
 
 const helpers = {
+  // this works but am not sure how to integrate it into addQuestion
+  generateID: (callback) => {
+    let query = Question.count();
+    query.exec((err, count) => {
+      callback(err, count + 1)
+    })
+  },
   addQuestion: (req, callback) => {
     // req.body params: body, name, email, product_id
-    let question_id = Math.floor(Math.random() * Math.floor(999999999999)) // random number between 0 and 1 trillion - good enough for now but should change this in the future
-
     let newQuestion = new Question({
-      question_id, // look into collection.count(), might be better than the random number thing
+      question_id: Math.floor(Math.random() * Math.floor(999999999999)),
       product_id: Number(req.body.product_id),
       question_body: req.body.body,
       question_date: formatDate(new Date()),
@@ -39,10 +44,11 @@ const helpers = {
       helpfulness: 0,
       answers: []
     })
-    //index question_id? or is it already
-    newQuestion.save((err, ques) => {
+
+    Question.create(newQuestion, (err, ques) => {
       callback(err, ques)
-    })
+    });
+    //index question_id? or is it already
 
   },
   getQuestionsByProductId: (req, callback) => {

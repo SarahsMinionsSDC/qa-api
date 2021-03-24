@@ -15,6 +15,7 @@ const questionSchema = mongoose.Schema({
 
 questionSchema.index({question_id: 1})
 questionSchema.index({product_id: 1})
+questionSchema.index({"answers.answer_id": 1})
 
 const Question = mongoose.model("Question", questionSchema);
 
